@@ -101,15 +101,23 @@ function sendMessage(evt){
 };
 
 function startVideoChat(evt) {
-    const videoElem = document.querySelector('#userCam');
-    navigator.mediaDevices.getUserMedia({ audio: false, video: true }).then(function(stream) {
-        evt.target.setAttribute('display', 'hidden');
-        videoElem.setAttribute('src', stream);
-    }).catch(function(err) {
-        videoElem.innerText = 'There has been an error ;__; \n'+err;
-    });
+    navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+        .then(function(stream) {
+            videoSuccess
+        }).catch(function(err) {
+            console.log(err);
+        });
 };
-
+function videoSuccess(stream) {
+    evt.target.setAttribute('display', 'hidden');
+    const video = stream.getVideoTracks();
+    console.log(video);
+    console.log('Using video device: '+ video[0].label);
+    stream.oninactive = function() {
+        console.log('Stream inactive');
+    }
+    document.querySelector('#userVideo').srcObject = stream;
+}
 // ###### EVENT LISTENERS ######
 
 document.querySelectorAll('tr').forEach( item => {
