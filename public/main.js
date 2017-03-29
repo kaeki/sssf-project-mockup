@@ -61,7 +61,7 @@ const messages = [
 
 function messageTemplate(msg) {
     const time = new Date(msg.time).toLocaleString('fi-FI');
-    const template = `<div class="message">
+    const template = `<div class="card message">
                         <h6>${msg.user}</h6>
                         <p>${msg.message}</p>
                         <p class="timestamp">${time}</p>
@@ -85,19 +85,29 @@ function showChat(currentChannel) {
     });
 };
 
-function sendMessage(){
+function sendMessage(evt){
+    evt.preventDefault();
     const currentChannel = document.querySelector('#chat-title').innerText;
     const user = 'ME';
     const message = document.querySelector('#newMessage').value;
+    document.querySelector('#newMessage').value = '';
     if(message == '' || typeof message == 'undefined'){
         return;
     }
     const time = Date.now();
     const channelarr = messages.filter(channel => channel.channel == currentChannel);
-
-    console.log(channelarr);
     channelarr[0].messages.push({user: user, message: message, time: time});
     showChat(currentChannel);
+};
+
+function startVideoChat(evt) {
+    const videoElem = document.querySelector('#userCam');
+    navigator.mediaDevices.getUserMedia({ audio: false, video: true }).then(function(stream) {
+        evt.target.setAttribute('display', 'hidden');
+        videoElem.setAttribute('src', stream);
+    }).catch(function(err) {
+        videoElem.innerText = 'There has been an error ;__; \n'+err;
+    });
 };
 
 // ###### EVENT LISTENERS ######
@@ -105,5 +115,6 @@ function sendMessage(){
 document.querySelectorAll('tr').forEach( item => {
     item.addEventListener('click', sidebarClick );
 });
+document.querySelector('#startVideoBtn').addEventListener('click', startVideoChat);
 
-document.querySelector('#sendMessageBtn').addEventListener('click', sendMessage );
+document.querySelector('#sendMessageForm').addEventListener('submit', sendMessage );
