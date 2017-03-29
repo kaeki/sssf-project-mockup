@@ -103,20 +103,21 @@ function sendMessage(evt){
 function startVideoChat(evt) {
     navigator.mediaDevices.getUserMedia({ audio: false, video: true })
         .then(function(stream) {
+            evt.target.setAttribute('display', 'hidden');
             videoSuccess
         }).catch(function(err) {
             console.log(err);
         });
 };
 function videoSuccess(stream) {
-    evt.target.setAttribute('display', 'hidden');
-    const video = stream.getVideoTracks();
-    console.log(video);
-    console.log('Using video device: '+ video[0].label);
-    stream.oninactive = function() {
-        console.log('Stream inactive');
+    const video = document.querySelector('#userVideo');
+    window.stream = stream;
+    if(window.url){
+        video.src = window.URL.createObjectURL(stream);
     }
-    document.querySelector('#userVideo').srcObject = stream;
+    else{
+        video.src = stream;    
+    }
 }
 // ###### EVENT LISTENERS ######
 
